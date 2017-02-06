@@ -121,14 +121,14 @@ static void url_edge_free(UrlEdge *e)
     memory_free(e);
 }
 
-API_ROUTER_ERROR url_tree_init(UrlTree *t)
+URL_ROUTER_ERROR url_tree_init(UrlTree *t)
 {
     url_node_init(&t->root);
     t->max_args = 0;
-    return API_ROUTER_E_OK;
+    return URL_ROUTER_E_OK;
 }
 
-static API_ROUTER_ERROR _url_tree_destroy(UrlNode *n)
+static URL_ROUTER_ERROR _url_tree_destroy(UrlNode *n)
 {
     if (n) {
         for (UrlEdge *e = n->begin; e;) {
@@ -138,10 +138,10 @@ static API_ROUTER_ERROR _url_tree_destroy(UrlNode *n)
             e = next;
         }
     }
-    return API_ROUTER_E_OK;
+    return URL_ROUTER_E_OK;
 }
 
-API_ROUTER_ERROR url_tree_destroy(UrlTree *t)
+URL_ROUTER_ERROR url_tree_destroy(UrlTree *t)
 {
     return _url_tree_destroy(&t->root);
 }
@@ -178,12 +178,12 @@ static UrlEdge *url_create_edges(const String *url, void *data)
     return root_edge;
 }
 
-static API_ROUTER_ERROR
+static URL_ROUTER_ERROR
 url_node_add_edge(UrlNode *n, const String *url, void *data)
 {
     UrlEdge *new_edge = url_create_edges(url, data);
     if (new_edge == NULL) {
-        return API_ROUTER_E_NO_MEMORY;
+        return URL_ROUTER_E_NO_MEMORY;
     }
     if (n->begin == NULL) {
         n->begin = n->end = new_edge;
@@ -197,19 +197,19 @@ url_node_add_edge(UrlNode *n, const String *url, void *data)
         }
     }
 
-    return API_ROUTER_E_OK;
+    return URL_ROUTER_E_OK;
 }
 
-API_ROUTER_ERROR
+URL_ROUTER_ERROR
 _url_tree_insert(UrlNode *n, const String *url, void *data)
 {
     if (url->len == 0) {
         if (n->leaf) {
-            return API_ROUTER_E_URL_EXISTED;
+            return URL_ROUTER_E_URL_EXISTED;
         }
         n->data = data;
         n->leaf = true;
-        return API_ROUTER_E_OK;
+        return URL_ROUTER_E_OK;
     }
 
     FOREACH_NODE_EDGE(n, e)
@@ -231,18 +231,18 @@ _url_tree_insert(UrlNode *n, const String *url, void *data)
     return url_node_add_edge(n, url, data);
 }
 
-API_ROUTER_ERROR
+URL_ROUTER_ERROR
 url_tree_insert(UrlTree *t, const char *url, int len, void *data)
 {
     String surl = {.str = url, .len = len};
 
     if (!is_url_validated(&surl)) {
-        return API_ROUTER_E_WRONG_PARAMETER;
+        return URL_ROUTER_E_WRONG_PARAMETER;
     }
 
-    API_ROUTER_ERROR err = _url_tree_insert(&t->root, &surl, data);
+    URL_ROUTER_ERROR err = _url_tree_insert(&t->root, &surl, data);
 
-    if (err == API_ROUTER_E_OK) {
+    if (err == URL_ROUTER_E_OK) {
         int num_args = url_get_num_of_args(&surl);
         if (num_args > t->max_args) {
             t->max_args = num_args;
@@ -252,17 +252,17 @@ url_tree_insert(UrlTree *t, const char *url, int len, void *data)
     return err;
 }
 
-static API_ROUTER_ERROR
+static URL_ROUTER_ERROR
 _url_tree_match(UrlNode *n, const String *url, ArgListImp *l, void **data)
 {
-    API_ROUTER_ERROR err;
+    URL_ROUTER_ERROR err;
 
     if (url->len == 0) {
         if (!n->leaf) {
-            return API_ROUTER_E_NOT_FOUND;
+            return URL_ROUTER_E_NOT_FOUND;
         }
         *data = n->data;
-        return API_ROUTER_E_OK;
+        return URL_ROUTER_E_OK;
     }
 
     FOREACH_NODE_EDGE(n, e)
@@ -286,7 +286,7 @@ _url_tree_match(UrlNode *n, const String *url, ArgListImp *l, void **data)
         }
 
         err = _url_tree_match(&e->node, &remain_path, l, data);
-        if (err == API_ROUTER_E_OK) {
+        if (err == URL_ROUTER_E_OK) {
             return err;
         }
 
@@ -295,10 +295,10 @@ _url_tree_match(UrlNode *n, const String *url, ArgListImp *l, void **data)
         }
     }
 
-    return API_ROUTER_E_NOT_FOUND;
+    return URL_ROUTER_E_NOT_FOUND;
 }
 
-API_ROUTER_ERROR
+URL_ROUTER_ERROR
 url_tree_match(UrlTree *t,
                const char *url,
                const int len,
@@ -306,7 +306,7 @@ url_tree_match(UrlTree *t,
                void **data)
 {
     if (url == NULL || len < 1 || url[0] != '/') {
-        return API_ROUTER_E_WRONG_PARAMETER;
+        return URL_ROUTER_E_WRONG_PARAMETER;
     }
 
     ArgListImp *l = NULL;
@@ -316,8 +316,8 @@ url_tree_match(UrlTree *t,
     *arg = (ArgList *)l;
 
     String surl = {.str = url, .len = len};
-    API_ROUTER_ERROR err = _url_tree_match(&t->root, &surl, l, data);
-    if (err != API_ROUTER_E_OK) {
+    URL_ROUTER_ERROR err = _url_tree_match(&t->root, &surl, l, data);
+    if (err != URL_ROUTER_E_OK) {
         arg_list_free(l);
     }
     return err;

@@ -29,15 +29,13 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef API_ROUTER_URL_TREE_H
-#define API_ROUTER_URL_TREE_H
+#ifndef URL_ROUTER_URL_TREE_H
+#define URL_ROUTER_URL_TREE_H
 
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "api_router.h"
-
-#define POINTER_SIZE (sizeof(void *))
+#include "url_router.h"
 
 struct UrlEdge;
 struct UrlNode;
@@ -61,15 +59,15 @@ typedef struct UrlTree {
     int max_args;
 } UrlTree;
 
-API_ROUTER_ERROR url_tree_init(UrlTree *t);
-API_ROUTER_ERROR url_tree_destroy(UrlTree *t);
-API_ROUTER_ERROR
+URL_ROUTER_ERROR url_tree_init(UrlTree *t);
+URL_ROUTER_ERROR url_tree_destroy(UrlTree *t);
+URL_ROUTER_ERROR
 url_tree_insert(UrlTree *t, const char *url, int len, void *data);
-API_ROUTER_ERROR
+URL_ROUTER_ERROR
 url_tree_match(UrlTree *t,
                const char *url,
                const int len,
                ArgList **arg,
                void **data);
 
-#endif /* API_ROUTER_URL_TREE_H */
+#endif /* URL_ROUTER_URL_TREE_H */

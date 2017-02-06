@@ -29,7 +29,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "test.h"
+#include "test_api.h"
 #include "url_tree.h"
 #include <unity/unity.h>
 
@@ -82,26 +82,26 @@ void test_url_tree_insert_match_no_arg()
 
     for (int i = 0; i < sizeof(cases) / sizeof(cases[0]); ++i) {
         struct Case *c = &cases[i];
-        API_ROUTER_ERROR err;
+        URL_ROUTER_ERROR err;
         ArgList *args;
         int *data;
         switch (c->op) {
         case OP_INSERT:
             err = url_tree_insert(&tree, c->url, c->len, (void *)&c->data);
-            TEST_ASSERT_EQUAL(API_ROUTER_E_OK, err);
+            TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
             break;
         case OP_INSERT_CONFLICT:
             err = url_tree_insert(&tree, c->url, c->len, (void *)&c->data);
-            TEST_ASSERT_EQUAL(API_ROUTER_E_URL_EXISTED, err);
+            TEST_ASSERT_EQUAL(URL_ROUTER_E_URL_EXISTED, err);
         case OP_MATCH:
             err = url_tree_match(&tree, c->url, c->len, &args, (void **)&data);
-            TEST_ASSERT_EQUAL(API_ROUTER_E_OK, err);
+            TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
             TEST_ASSERT_NULL(args);
             TEST_ASSERT_EQUAL_INT(c->data, *data);
             break;
         case OP_NOT_MATCH:
             err = url_tree_match(&tree, c->url, c->len, &args, (void **)&data);
-            TEST_ASSERT_EQUAL(API_ROUTER_E_NOT_FOUND, err);
+            TEST_ASSERT_EQUAL(URL_ROUTER_E_NOT_FOUND, err);
             break;
         }
     }
@@ -113,7 +113,7 @@ void test_url_tree_insert_match_with_args()
 {
     UrlTree tree;
     ArgList *args;
-    API_ROUTER_ERROR err;
+    URL_ROUTER_ERROR err;
     const char *val;
     bool is_existed;
     int data;
@@ -123,11 +123,11 @@ void test_url_tree_insert_match_with_args()
 
     // insert /a/:var/c
     err = url_tree_insert(&tree, "/a/:var/c", 9, (void *)1);
-    TEST_ASSERT_EQUAL(API_ROUTER_E_OK, err);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
 
     // /a/b/c should match /a/:var/c
     err = url_tree_match(&tree, "/a/b/c", 6, &args, (void **)&data);
-    TEST_ASSERT_EQUAL(API_ROUTER_E_OK, err);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
     is_existed = arg_list_get(args, "var", 3, &val, &vlen);
     TEST_ASSERT_TRUE(is_existed);
     TEST_ASSERT_EQUAL_STRING_LEN("b", val, vlen);
@@ -136,11 +136,11 @@ void test_url_tree_insert_match_with_args()
 
     // /a/b/d should not match
     err = url_tree_match(&tree, "/a/b/d", 6, &args, (void **)&data);
-    TEST_ASSERT_EQUAL(API_ROUTER_E_NOT_FOUND, err);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_NOT_FOUND, err);
 
     // /a/hello/c should match /a/:var/c
     err = url_tree_match(&tree, "/a/hello/c", 10, &args, (void **)&data);
-    TEST_ASSERT_EQUAL(API_ROUTER_E_OK, err);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
     TEST_ASSERT_EQUAL_INT(1, data);
     is_existed = arg_list_get(args, "var", 3, &val, &vlen);
     TEST_ASSERT_TRUE(is_existed);
@@ -149,7 +149,7 @@ void test_url_tree_insert_match_with_args()
 
     // insert /a/b/c/:foo/e/:bar
     err = url_tree_insert(&tree, "/a/b/c/:foo/e/:bar", 18, (void *)2);
-    TEST_ASSERT_EQUAL(API_ROUTER_E_OK, err);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
 
     // /a/b/c/d/e/f should match /a/b/c/:foo/e/:bar
     err = url_tree_match(&tree, "/a/b/c/d/e/f", 12, &args, (void **)&data);

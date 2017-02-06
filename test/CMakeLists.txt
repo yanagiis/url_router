@@ -1,4 +1,4 @@
-set(SRC test.c
+set(SRC test_api.c
 	test_url_tree.c)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)

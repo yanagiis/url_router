@@ -29,8 +29,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef API_ROUTER_ARG_LIST_H
-#define API_ROUTER_ARG_LIST_H
+#ifndef URL_ROUTER_ARG_LIST_H
+#define URL_ROUTER_ARG_LIST_H
 
 #include "str.h"
 #include <stdbool.h>
@@ -50,4 +50,4 @@ ArgListImp *arg_list_new(int size);
 bool arg_list_push(ArgListImp *l, String *key, String *value);
 bool arg_list_pop(ArgListImp *l);
 
-#endif /* API_ROUTER_ARG_LIST_H */
+#endif /* URL_ROUTER_ARG_LIST_H */

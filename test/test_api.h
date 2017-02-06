@@ -29,10 +29,10 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef TEST_H
-#define TEST_H
+#ifndef TEST_API_H
+#define TEST_API_H
 
 void test_url_tree_insert_match_no_arg();
 void test_url_tree_insert_match_with_args();
 
-#endif /* TEST_H */
+#endif /* TEST_API_H */

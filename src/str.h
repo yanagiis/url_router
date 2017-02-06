@@ -29,12 +29,12 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef API_ROUTER_STR_H
-#define API_ROUTER_STR_H
+#ifndef URL_ROUTER_STR_H
+#define URL_ROUTER_STR_H
 
 typedef struct String {
     const char *str;
     int len;
 } String;
 
-#endif /* API_ROUTER_STR_H */
+#endif /* URL_ROUTER_STR_H */
