@@ -58,8 +58,9 @@ static bool is_url_validated(const String *url)
     return true;
 }
 
-static bool
-url_get_first_level(const String *url, String *subpath, String *remain)
+static bool url_get_first_level(const String *url,
+                                String *subpath,
+                                String *remain)
 {
     if (url->len < 1) {
         return false;
@@ -178,8 +179,9 @@ static UrlEdge *url_create_edges(const String *url, void *data)
     return root_edge;
 }
 
-static URL_ROUTER_ERROR
-url_node_add_edge(UrlNode *n, const String *url, void *data)
+static URL_ROUTER_ERROR url_node_add_edge(UrlNode *n,
+                                          const String *url,
+                                          void *data)
 {
     UrlEdge *new_edge = url_create_edges(url, data);
     if (new_edge == NULL) {
@@ -252,8 +254,10 @@ url_tree_insert(UrlTree *t, const char *url, int len, void *data)
     return err;
 }
 
-static URL_ROUTER_ERROR
-_url_tree_match(UrlNode *n, const String *url, ArgListImp *l, void **data)
+static URL_ROUTER_ERROR _url_tree_match(UrlNode *n,
+                                        const String *url,
+                                        ArgListImp *l,
+                                        void **data)
 {
     URL_ROUTER_ERROR err;
 

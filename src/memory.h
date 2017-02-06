@@ -36,15 +36,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static inline void *memory_malloc(int size)
 {
-	if (size == 0) {
-		return NULL;
-	}
-	return malloc(size);
+    if (size == 0) {
+        return NULL;
+    }
+    return malloc(size);
 }
 
 static inline void memory_free(void *ptr)
 {
-	free(ptr);
+    free(ptr);
 }
 
 #endif /* URL_ROUTER_MEMORY_H */
