@@ -29,14 +29,38 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "test_api.h"
+#include "url_router.h"
 #include <unity/unity.h>
+
+static void test_url_router_insert_match()
+{
+	char *abc;
+	char *data;
+	Args *args;
+	URL_ROUTER_ERROR err;
+
+	UrlRouter *r = url_router_new();
+	err = url_router_insert(r, "/a/b/c", (void *) abc);
+	TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+
+	err = url_router_match(r, "/a/b/c", &args, (void **) &data);
+	TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+	TEST_ASSERT_EQUAL_PTR(abc, data);
+
+	err = url_router_insert(r, "/a/:var/d", (void *) abc);
+	TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+
+	err = url_router_match(r, "/a/b/d", &args, (void **) &data);
+	TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+	TEST_ASSERT_EQUAL_PTR(abc, data);
+
+	url_router_args_free(args);
+}
 
 int main(int argc, char *argv[])
 {
     UNITY_BEGIN();
-    RUN_TEST(test_url_tree_insert_match_no_arg);
-    RUN_TEST(test_url_tree_insert_match_with_args);
+	RUN_TEST(test_url_router_insert_match);
     UNITY_END();
     return 0;
 }

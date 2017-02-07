@@ -67,7 +67,7 @@ URL_ROUTER_ERROR
 url_tree_match(UrlTree *t,
                const char *url,
                const int len,
-               ArgList **arg,
+               Args **arg,
                void **data);
 
 #endif /* URL_ROUTER_URL_TREE_H */

@@ -31,14 +31,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <string.h>
 
-#include "url_router.h"
-#include "arg_list.h"
+#include "args.h"
 #include "memory.h"
 #include "str.h"
+#include "url_router.h"
 
-ArgListImp *arg_list_new(int size)
+ArgsImp *url_router_args_new(int size)
 {
-    ArgListImp *l = memory_malloc(sizeof(ArgListImp) + sizeof(Pair) * size);
+    ArgsImp *l = memory_malloc(sizeof(ArgsImp) + sizeof(Pair) * size);
     if (l == NULL) {
         return NULL;
     }
@@ -52,17 +52,17 @@ ArgListImp *arg_list_new(int size)
         l->pairs[i].value.len = 0;
     }
 
-    return (ArgList *)l;
+    return (Args *)l;
 }
 
-void arg_list_free(ArgList *l)
+void url_router_args_free(Args *l)
 {
     if (l != NULL) {
         memory_free(l);
     }
 }
 
-bool arg_list_push(ArgListImp *l, String *key, String *value)
+bool url_router_args_push(ArgsImp *l, String *key, String *value)
 {
     if (l->len == l->cap) {
         return false;
@@ -75,7 +75,7 @@ bool arg_list_push(ArgListImp *l, String *key, String *value)
     return true;
 }
 
-bool arg_list_pop(ArgListImp *l)
+bool url_router_args_pop(ArgsImp *l)
 {
     if (l->len == 0) {
         return false;
@@ -85,13 +85,13 @@ bool arg_list_pop(ArgListImp *l)
     return true;
 }
 
-bool arg_list_get(ArgList *al,
-                  const char *key,
-                  const int klen,
-                  const char **val,
-                  int *vlen)
+bool url_router_args_get(Args *al,
+                         const char *key,
+                         const int klen,
+                         const char **val,
+                         int *vlen)
 {
-    ArgListImp *l = (ArgListImp *)al;
+    ArgsImp *l = (ArgsImp *)al;
     for (int i = 0; i < l->len; ++i) {
         String *skey = &l->pairs[i].key;
         if (skey->len != klen) {

@@ -1,4 +1,5 @@
-set(SRC arg_list.c
-	url_tree.c)
+set(SRC args.c
+	url_tree.c
+	url_router.c)
 
-add_library(api_router STATIC ${SRC})
+add_library(url_router STATIC ${SRC})

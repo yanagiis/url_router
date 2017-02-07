@@ -34,7 +34,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdbool.h>
 
-typedef void ArgList;
+typedef void Args;
+typedef void UrlRouter;
 
 typedef enum URL_ROUTER_ERROR {
     URL_ROUTER_E_OK = 0,
@@ -44,11 +45,14 @@ typedef enum URL_ROUTER_ERROR {
     URL_ROUTER_E_NOT_FOUND = 4
 } URL_ROUTER_ERROR;
 
-void arg_list_free(ArgList *l);
-bool arg_list_get(ArgList *l,
-                  const char *key,
-                  const int klen,
-                  const char **val,
-                  int *vlen);
+void url_router_args_free(Args *l);
+bool url_router_args_get(Args *l, const char *key, const int klen, const char **val, int *vlen);
+
+UrlRouter *url_router_new();
+void url_router_free(UrlRouter *r);
+URL_ROUTER_ERROR url_router_insert(UrlRouter *r, const char *key, void *data);
+URL_ROUTER_ERROR url_router_insertl(UrlRouter *r, const char *key, int klen, void *data);
+URL_ROUTER_ERROR url_router_match(UrlRouter *r, const char *key, Args *arg, void **data);
+URL_ROUTER_ERROR url_router_matchl(UrlRouter *r, const char *key, int klen, Args *arg, void **data);
 
 #endif /* URL_ROUTER_H */

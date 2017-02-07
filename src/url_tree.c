@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <string.h>
 
-#include "arg_list.h"
+#include "args.h"
 #include "memory.h"
 #include "str.h"
 #include "url_tree.h"
@@ -256,7 +256,7 @@ url_tree_insert(UrlTree *t, const char *url, int len, void *data)
 
 static URL_ROUTER_ERROR _url_tree_match(UrlNode *n,
                                         const String *url,
-                                        ArgListImp *l,
+                                        ArgsImp *l,
                                         void **data)
 {
     URL_ROUTER_ERROR err;
@@ -279,7 +279,7 @@ static URL_ROUTER_ERROR _url_tree_match(UrlNode *n,
             String label;
             label.str = e->label + 1;
             label.len = e->len - 1;
-            arg_list_push(l, &label, &subpath);
+            url_router_args_push(l, &label, &subpath);
         } else {
             if (subpath.len != e->len) {
                 continue;
@@ -295,7 +295,7 @@ static URL_ROUTER_ERROR _url_tree_match(UrlNode *n,
         }
 
         if (e->label[0] == ':') {
-            arg_list_pop(l);
+            url_router_args_pop(l);
         }
     }
 
@@ -306,23 +306,23 @@ URL_ROUTER_ERROR
 url_tree_match(UrlTree *t,
                const char *url,
                const int len,
-               ArgList **arg,
+               Args **arg,
                void **data)
 {
     if (url == NULL || len < 1 || url[0] != '/') {
         return URL_ROUTER_E_WRONG_PARAMETER;
     }
 
-    ArgListImp *l = NULL;
+    ArgsImp *l = NULL;
     if (t->max_args > 0) {
-        l = arg_list_new(t->max_args);
+        l = url_router_args_new(t->max_args);
     }
-    *arg = (ArgList *)l;
+    *arg = (Args *)l;
 
     String surl = {.str = url, .len = len};
     URL_ROUTER_ERROR err = _url_tree_match(&t->root, &surl, l, data);
     if (err != URL_ROUTER_E_OK) {
-        arg_list_free(l);
+        url_router_args_free(l);
     }
     return err;
 }
