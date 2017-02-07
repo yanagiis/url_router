@@ -127,7 +127,7 @@ void test_url_tree_insert_match_with_args()
     // /a/b/c should match /a/:var/c
     err = url_tree_match(&tree, "/a/b/c", 6, &args, (void **)&data);
     TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
-    is_existed = url_router_args_get(args, "var", 3, &val, &vlen);
+    is_existed = url_router_args_getl(args, "var", 3, &val, &vlen);
     TEST_ASSERT_TRUE(is_existed);
     TEST_ASSERT_EQUAL_STRING_LEN("b", val, vlen);
     TEST_ASSERT_EQUAL_INT(1, data);
@@ -141,7 +141,7 @@ void test_url_tree_insert_match_with_args()
     err = url_tree_match(&tree, "/a/hello/c", 10, &args, (void **)&data);
     TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
     TEST_ASSERT_EQUAL_INT(1, data);
-    is_existed = url_router_args_get(args, "var", 3, &val, &vlen);
+    is_existed = url_router_args_getl(args, "var", 3, &val, &vlen);
     TEST_ASSERT_TRUE(is_existed);
     TEST_ASSERT_EQUAL_STRING_LEN("hello", val, vlen);
     url_router_args_free(args);
@@ -154,10 +154,10 @@ void test_url_tree_insert_match_with_args()
     err = url_tree_match(&tree, "/a/b/c/d/e/f", 12, &args, (void **)&data);
     TEST_ASSERT_EQUAL_INT(2, data);
 
-    is_existed = url_router_args_get(args, "foo", 3, &val, &vlen);
+    is_existed = url_router_args_getl(args, "foo", 3, &val, &vlen);
     TEST_ASSERT_TRUE(is_existed);
     TEST_ASSERT_EQUAL_STRING_LEN("d", val, vlen);
-    is_existed = url_router_args_get(args, "bar", 3, &val, &vlen);
+    is_existed = url_router_args_getl(args, "bar", 3, &val, &vlen);
     TEST_ASSERT_TRUE(is_existed);
     TEST_ASSERT_EQUAL_STRING_LEN("f", val, vlen);
     url_router_args_free(args);

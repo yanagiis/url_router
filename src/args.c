@@ -36,6 +36,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "str.h"
 #include "url_router.h"
 
+void url_router_arg_free(char *arg)
+{
+	memory_free(arg);
+}
+
 ArgsImp *url_router_args_new(int size)
 {
     ArgsImp *l = memory_malloc(sizeof(ArgsImp) + sizeof(Pair) * size);
@@ -85,11 +90,28 @@ bool url_router_args_pop(ArgsImp *l)
     return true;
 }
 
-bool url_router_args_get(Args *al,
-                         const char *key,
-                         const int klen,
-                         const char **val,
-                         int *vlen)
+bool url_router_args_get(Args *al, const char *key, char **val)
+{
+    const char *value;
+    int len;
+
+    bool ret = url_router_args_getl(al, key, strlen(key), &value, &len);
+    if (ret) {
+        *val = memory_malloc(len + 1);
+        if (*val == NULL) {
+            return false;
+        }
+        strncpy(*val, value, len);
+        (*val)[len] = 0;
+    }
+    return ret;
+}
+
+bool url_router_args_getl(Args *al,
+                          const char *key,
+                          const int klen,
+                          const char **val,
+                          int *vlen)
 {
     ArgsImp *l = (ArgsImp *)al;
     for (int i = 0; i < l->len; ++i) {

@@ -45,8 +45,10 @@ typedef enum URL_ROUTER_ERROR {
     URL_ROUTER_E_NOT_FOUND = 4
 } URL_ROUTER_ERROR;
 
+void url_router_arg_free(char *arg);
 void url_router_args_free(Args *l);
-bool url_router_args_get(Args *l, const char *key, const int klen, const char **val, int *vlen);
+bool url_router_args_get(Args *l, const char *key, char **val);
+bool url_router_args_getl(Args *l, const char *key, const int klen, const char **val, int *vlen);
 
 UrlRouter *url_router_new();
 void url_router_free(UrlRouter *r);
