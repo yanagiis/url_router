@@ -7,3 +7,4 @@ link_directories(${ROOT_DIR}/lib)
 
 add_subdirectory(src)
 add_subdirectory(test)
+add_subdirectory(example)
