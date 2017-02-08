@@ -34,12 +34,12 @@ int main(int argc, char *argv[])
     if (err == URL_ROUTER_E_OK) {
         if (url_router_args_get(args, "var", &arg)) {
             printf("Arg: %s\n", arg);
-			url_router_arg_free(arg);
+            url_router_arg_free(arg);
         }
         printf("%s\n", data);
     }
     url_router_args_free(args);
-	url_router_free(r);
+    url_router_free(r);
 
     printf("Done\n");
     return 0;
