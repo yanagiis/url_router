@@ -107,6 +107,17 @@ bool url_router_args_get(Args *al, const char *key, char **val)
     return ret;
 }
 
+bool url_router_args_get_as_long(Args *al, const char *key, long *val)
+{
+    char *sval;
+    bool ret = url_router_args_get(al, key, &sval);
+    if (ret) {
+        *val = strtol(sval, NULL, 10);
+        url_router_arg_free(sval);
+    }
+    return ret;
+}
+
 bool url_router_args_getl(Args *al,
                           const char *key,
                           const int klen,
