@@ -38,12 +38,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void url_router_arg_free(char *arg)
 {
-	memory_free(arg);
+	url_router_free(arg);
 }
 
 ArgsImp *url_router_args_new(int size)
 {
-    ArgsImp *l = memory_malloc(sizeof(ArgsImp) + sizeof(Pair) * size);
+    ArgsImp *l = url_router_malloc(sizeof(ArgsImp) + sizeof(Pair) * size);
     if (l == NULL) {
         return NULL;
     }
@@ -63,7 +63,7 @@ ArgsImp *url_router_args_new(int size)
 void url_router_args_free(Args *l)
 {
     if (l != NULL) {
-        memory_free(l);
+        url_router_free(l);
     }
 }
 
@@ -97,7 +97,7 @@ bool url_router_args_get(Args *al, const char *key, char **val)
 
     bool ret = url_router_args_getl(al, key, strlen(key), &value, &len);
     if (ret) {
-        *val = memory_malloc(len + 1);
+        *val = url_router_malloc(len + 1);
         if (*val == NULL) {
             return false;
         }

@@ -10,7 +10,7 @@ typedef struct UrlRouterImp {
 
 UrlRouter *url_router_new()
 {
-    UrlRouterImp *r = memory_malloc(sizeof(UrlRouterImp));
+    UrlRouterImp *r = MALLOC(sizeof(UrlRouterImp));
     url_tree_init(&r->t);
     return (UrlRouter *)r;
 }
@@ -19,7 +19,7 @@ void url_router_free(UrlRouter *router)
 {
     UrlRouterImp *r = (UrlRouter *)router;
     url_tree_destroy(&r->t);
-    memory_free(r);
+    FREE(r);
 }
 
 URL_ROUTER_ERROR url_router_insert(UrlRouter *router,

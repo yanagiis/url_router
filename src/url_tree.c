@@ -105,7 +105,7 @@ static void url_node_init(UrlNode *node)
 
 static UrlEdge *url_edge_new(String *url)
 {
-    UrlEdge *new_edge = memory_malloc(sizeof(UrlEdge) + url->len);
+    UrlEdge *new_edge = MALLOC(sizeof(UrlEdge) + url->len);
     if (new_edge == NULL) {
         return NULL;
     }
@@ -119,7 +119,7 @@ static UrlEdge *url_edge_new(String *url)
 
 static void url_edge_free(UrlEdge *e)
 {
-    memory_free(e);
+    FREE(e);
 }
 
 URL_ROUTER_ERROR url_tree_init(UrlTree *t)
