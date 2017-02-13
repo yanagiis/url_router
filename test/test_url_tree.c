@@ -82,26 +82,28 @@ void test_url_tree_insert_match_no_arg()
     for (int i = 0; i < sizeof(cases) / sizeof(cases[0]); ++i) {
         struct Case *c = &cases[i];
         URL_ROUTER_ERROR err;
-        Args *args;
+        Dict *args;
         int *data;
         switch (c->op) {
-        case OP_INSERT:
-            err = url_tree_insert(&tree, c->url, c->len, (void *)&c->data);
-            TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
-            break;
-        case OP_INSERT_CONFLICT:
-            err = url_tree_insert(&tree, c->url, c->len, (void *)&c->data);
-            TEST_ASSERT_EQUAL(URL_ROUTER_E_URL_EXISTED, err);
-        case OP_MATCH:
-            err = url_tree_match(&tree, c->url, c->len, &args, (void **)&data);
-            TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
-            TEST_ASSERT_NULL(args);
-            TEST_ASSERT_EQUAL_INT(c->data, *data);
-            break;
-        case OP_NOT_MATCH:
-            err = url_tree_match(&tree, c->url, c->len, &args, (void **)&data);
-            TEST_ASSERT_EQUAL(URL_ROUTER_E_NOT_FOUND, err);
-            break;
+            case OP_INSERT:
+                err = url_tree_insert(&tree, c->url, c->len, (void *)&c->data);
+                TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+                break;
+            case OP_INSERT_CONFLICT:
+                err = url_tree_insert(&tree, c->url, c->len, (void *)&c->data);
+                TEST_ASSERT_EQUAL(URL_ROUTER_E_URL_EXISTED, err);
+            case OP_MATCH:
+                err = url_tree_match(&tree, c->url, c->len, &args,
+                                     (void **)&data);
+                TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+                TEST_ASSERT_EQUAL_INT(c->data, *data);
+                url_router_dict_free(args);
+                break;
+            case OP_NOT_MATCH:
+                err = url_tree_match(&tree, c->url, c->len, &args,
+                                     (void **)&data);
+                TEST_ASSERT_EQUAL(URL_ROUTER_E_NOT_FOUND, err);
+                break;
         }
     }
 
@@ -111,9 +113,9 @@ void test_url_tree_insert_match_no_arg()
 void test_url_tree_insert_match_with_args()
 {
     UrlTree tree;
-    Args *args;
+    Dict *args;
     URL_ROUTER_ERROR err;
-    const char *val;
+    char *var;
     bool is_existed;
     int data;
     int vlen;
@@ -127,11 +129,11 @@ void test_url_tree_insert_match_with_args()
     // /a/b/c should match /a/:var/c
     err = url_tree_match(&tree, "/a/b/c", 6, &args, (void **)&data);
     TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
-    is_existed = url_router_args_getl(args, "var", 3, &val, &vlen);
-    TEST_ASSERT_TRUE(is_existed);
-    TEST_ASSERT_EQUAL_STRING_LEN("b", val, vlen);
+    var = dict_get(args, "var");
+    TEST_ASSERT_NOT_NULL(var);
+    TEST_ASSERT_EQUAL_STRING("b", var);
     TEST_ASSERT_EQUAL_INT(1, data);
-    url_router_args_free(args);
+    url_router_dict_free(args);
 
     // /a/b/d should not match
     err = url_tree_match(&tree, "/a/b/d", 6, &args, (void **)&data);
@@ -141,10 +143,10 @@ void test_url_tree_insert_match_with_args()
     err = url_tree_match(&tree, "/a/hello/c", 10, &args, (void **)&data);
     TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
     TEST_ASSERT_EQUAL_INT(1, data);
-    is_existed = url_router_args_getl(args, "var", 3, &val, &vlen);
-    TEST_ASSERT_TRUE(is_existed);
-    TEST_ASSERT_EQUAL_STRING_LEN("hello", val, vlen);
-    url_router_args_free(args);
+    var = dict_get(args, "var");
+    TEST_ASSERT_NOT_NULL(var);
+    TEST_ASSERT_EQUAL_STRING("hello", var);
+    url_router_dict_free(args);
 
     // insert /a/b/c/:foo/e/:bar
     err = url_tree_insert(&tree, "/a/b/c/:foo/e/:bar", 18, (void *)2);
@@ -154,13 +156,13 @@ void test_url_tree_insert_match_with_args()
     err = url_tree_match(&tree, "/a/b/c/d/e/f", 12, &args, (void **)&data);
     TEST_ASSERT_EQUAL_INT(2, data);
 
-    is_existed = url_router_args_getl(args, "foo", 3, &val, &vlen);
-    TEST_ASSERT_TRUE(is_existed);
-    TEST_ASSERT_EQUAL_STRING_LEN("d", val, vlen);
-    is_existed = url_router_args_getl(args, "bar", 3, &val, &vlen);
-    TEST_ASSERT_TRUE(is_existed);
-    TEST_ASSERT_EQUAL_STRING_LEN("f", val, vlen);
-    url_router_args_free(args);
+    char *foo = dict_get(args, "foo");
+    TEST_ASSERT_NOT_NULL(foo);
+    TEST_ASSERT_EQUAL_STRING("d", foo);
+    char *bar = dict_get(args, "bar");
+    TEST_ASSERT_NOT_NULL(bar);
+    TEST_ASSERT_EQUAL_STRING("f", bar);
+    url_router_dict_free(args);
 
     url_tree_destroy(&tree);
 }

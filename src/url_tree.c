@@ -30,10 +30,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <string.h>
+#include <dict/dict.h>
 
-#include "args.h"
 #include "memory.h"
-#include "str.h"
 #include "url_tree.h"
 
 #define FOREACH_NODE_EDGE(n, e) for (UrlEdge *e = n->begin; e; e = e->next)
@@ -49,7 +48,7 @@ static const char *strnchr(const char *url, const int len, const char c)
     return url + len;
 }
 
-static bool is_url_validated(const String *url)
+static bool is_url_validated(const UrlRouterString *url)
 {
     if (url->len < 1 || url->str[0] != '/') {
         return false;
@@ -58,9 +57,9 @@ static bool is_url_validated(const String *url)
     return true;
 }
 
-static bool url_get_first_level(const String *url,
-                                String *subpath,
-                                String *remain)
+static bool url_get_first_level(const UrlRouterString *url,
+                                UrlRouterString *subpath,
+                                UrlRouterString *remain)
 {
     if (url->len < 1) {
         return false;
@@ -82,9 +81,9 @@ static bool url_get_first_level(const String *url,
     return true;
 }
 
-static int url_get_num_of_args(const String *url)
+static int url_get_num_of_args(const UrlRouterString *url)
 {
-    String subpath, remain_path;
+    UrlRouterString subpath, remain_path;
     int count = 0;
     while (url_get_first_level(url, &subpath, &remain_path)) {
         if (subpath.str[0] == ':') {
@@ -103,7 +102,7 @@ static void url_node_init(UrlNode *node)
     node->leaf = false;
 }
 
-static UrlEdge *url_edge_new(String *url)
+static UrlEdge *url_edge_new(UrlRouterString *url)
 {
     UrlEdge *new_edge = MALLOC(sizeof(UrlEdge) + url->len);
     if (new_edge == NULL) {
@@ -147,9 +146,9 @@ URL_ROUTER_ERROR url_tree_destroy(UrlTree *t)
     return _url_tree_destroy(&t->root);
 }
 
-static UrlEdge *url_create_edges(const String *url, void *data)
+static UrlEdge *url_create_edges(const UrlRouterString *url, void *data)
 {
-    String subpath, remain_path;
+    UrlRouterString subpath, remain_path;
     url_get_first_level(url, &subpath, &remain_path);
 
     UrlEdge *root_edge = url_edge_new(&subpath);
@@ -180,7 +179,7 @@ static UrlEdge *url_create_edges(const String *url, void *data)
 }
 
 static URL_ROUTER_ERROR url_node_add_edge(UrlNode *n,
-                                          const String *url,
+                                          const UrlRouterString *url,
                                           void *data)
 {
     UrlEdge *new_edge = url_create_edges(url, data);
@@ -203,7 +202,7 @@ static URL_ROUTER_ERROR url_node_add_edge(UrlNode *n,
 }
 
 URL_ROUTER_ERROR
-_url_tree_insert(UrlNode *n, const String *url, void *data)
+_url_tree_insert(UrlNode *n, const UrlRouterString *url, void *data)
 {
     if (url->len == 0) {
         if (n->leaf) {
@@ -216,7 +215,7 @@ _url_tree_insert(UrlNode *n, const String *url, void *data)
 
     FOREACH_NODE_EDGE(n, e)
     {
-        String subpath, remain_path;
+        UrlRouterString subpath, remain_path;
         if (!url_get_first_level(url, &subpath, &remain_path)) {
             break;
         }
@@ -236,7 +235,7 @@ _url_tree_insert(UrlNode *n, const String *url, void *data)
 URL_ROUTER_ERROR
 url_tree_insert(UrlTree *t, const char *url, int len, void *data)
 {
-    String surl = {.str = url, .len = len};
+    UrlRouterString surl = {.str = url, .len = len};
 
     if (!is_url_validated(&surl)) {
         return URL_ROUTER_E_WRONG_PARAMETER;
@@ -255,8 +254,8 @@ url_tree_insert(UrlTree *t, const char *url, int len, void *data)
 }
 
 static URL_ROUTER_ERROR _url_tree_match(UrlNode *n,
-                                        const String *url,
-                                        ArgsImp *l,
+                                        const UrlRouterString *url,
+                                        Dict *dict,
                                         void **data)
 {
     URL_ROUTER_ERROR err;
@@ -271,16 +270,12 @@ static URL_ROUTER_ERROR _url_tree_match(UrlNode *n,
 
     FOREACH_NODE_EDGE(n, e)
     {
-        String subpath, remain_path;
+        UrlRouterString subpath, remain_path;
         if (!url_get_first_level(url, &subpath, &remain_path)) {
             break;
         }
-        if (e->label[0] == ':') {
-            String label;
-            label.str = e->label + 1;
-            label.len = e->len - 1;
-            url_router_args_push(l, &label, &subpath);
-        } else {
+
+        if (e->label[0] != ':') {
             if (subpath.len != e->len) {
                 continue;
             }
@@ -289,13 +284,18 @@ static URL_ROUTER_ERROR _url_tree_match(UrlNode *n,
             }
         }
 
-        err = _url_tree_match(&e->node, &remain_path, l, data);
+        err = _url_tree_match(&e->node, &remain_path, dict, data);
         if (err == URL_ROUTER_E_OK) {
+            if (e->label[0] == ':' && dict != NULL) {
+                char *val = malloc(subpath.len + 1);
+                if (val == NULL) {
+                    return URL_ROUTER_E_NO_MEMORY;
+                }
+                strncpy(val, subpath.str, subpath.len);
+                val[subpath.len] = 0;
+                dict_addl(dict, e->label + 1, e->len - 1, val);
+            }
             return err;
-        }
-
-        if (e->label[0] == ':') {
-            url_router_args_pop(l);
         }
     }
 
@@ -306,23 +306,30 @@ URL_ROUTER_ERROR
 url_tree_match(UrlTree *t,
                const char *url,
                const int len,
-               Args **arg,
+               Dict **dict,
                void **data)
 {
     if (url == NULL || len < 1 || url[0] != '/') {
         return URL_ROUTER_E_WRONG_PARAMETER;
     }
 
-    ArgsImp *l = NULL;
-    if (t->max_args > 0) {
-        l = url_router_args_new(t->max_args);
-    }
-    *arg = (Args *)l;
+    Dict *d = NULL;
 
-    String surl = {.str = url, .len = len};
-    URL_ROUTER_ERROR err = _url_tree_match(&t->root, &surl, l, data);
-    if (err != URL_ROUTER_E_OK) {
-        url_router_args_free(l);
+    if (dict != NULL) {
+        d = dict_new();
+        if (d == NULL) {
+            return URL_ROUTER_E_NO_MEMORY;
+        }
+    }
+
+    UrlRouterString surl = {.str = url, .len = len};
+    URL_ROUTER_ERROR err = _url_tree_match(&t->root, &surl, d, data);
+    if (dict != NULL) {
+        if (err != URL_ROUTER_E_OK) {
+            dict_free(d, FREE);
+        } else {
+            *dict = d;
+        }
     }
     return err;
 }

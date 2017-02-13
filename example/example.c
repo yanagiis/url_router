@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     char *data;
 
     URL_ROUTER_ERROR err;
-    Args *args;
+    Dict *args;
     UrlRouter *r = url_router_new();
 
     err = url_router_insert(r, "/a/b/c", str1);
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     if (err == URL_ROUTER_E_OK) {
         printf("%s\n", data);
     }
-    url_router_args_free(args);
+    url_router_dict_free(args);
 
     err = url_router_insert(r, "/r/:var/c", str2);
     if (err != URL_ROUTER_E_OK) {
@@ -32,13 +32,12 @@ int main(int argc, char *argv[])
 
     err = url_router_match(r, "/r/b/c", &args, (void **)&data);
     if (err == URL_ROUTER_E_OK) {
-        if (url_router_args_get(args, "var", &arg)) {
-            printf("Arg: %s\n", arg);
-            url_router_arg_free(arg);
+        char *var = dict_get(args, "var");
+        if (var != NULL) {
+            printf("Args: %s\n", var);
         }
-        printf("%s\n", data);
     }
-    url_router_args_free(args);
+    url_router_dict_free(args);
     url_router_free(r);
 
     printf("Done\n");

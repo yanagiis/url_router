@@ -33,9 +33,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define URL_ROUTER_H
 
 #include <stdbool.h>
+#include <dict/dict.h>
 
-typedef void Args;
 typedef void UrlRouter;
+
+typedef struct UrlRouterString {
+    const char *str;
+    int len;
+} UrlRouterString;
 
 typedef enum URL_ROUTER_ERROR {
     URL_ROUTER_E_OK = 0,
@@ -45,17 +50,13 @@ typedef enum URL_ROUTER_ERROR {
     URL_ROUTER_E_NOT_FOUND = 4
 } URL_ROUTER_ERROR;
 
-void url_router_arg_free(char *arg);
-void url_router_args_free(Args *l);
-bool url_router_args_get(Args *l, const char *key, char **val);
-bool url_router_args_getl(Args *l, const char *key, const int klen, const char **val, int *vlen);
-bool url_router_args_get_as_long(Args *l, const char *key, long *val);
-
 UrlRouter *url_router_new();
 void url_router_free(UrlRouter *r);
 URL_ROUTER_ERROR url_router_insert(UrlRouter *r, const char *key, void *data);
 URL_ROUTER_ERROR url_router_insertl(UrlRouter *r, const char *key, int klen, void *data);
-URL_ROUTER_ERROR url_router_match(UrlRouter *r, const char *key, Args *arg, void **data);
-URL_ROUTER_ERROR url_router_matchl(UrlRouter *r, const char *key, int klen, Args *arg, void **data);
+URL_ROUTER_ERROR url_router_match(UrlRouter *r, const char *key, Dict **args, void **data);
+URL_ROUTER_ERROR url_router_matchl(UrlRouter *r, const char *key, int klen, Dict **args, void **data);
+
+void url_router_dict_free(Dict *dict);
 
 #endif /* URL_ROUTER_H */

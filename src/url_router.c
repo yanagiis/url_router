@@ -2,6 +2,7 @@
 #include "url_tree.h"
 #include "memory.h"
 
+#include <dict/dict.h>
 #include <string.h>
 
 typedef struct UrlRouterImp {
@@ -41,19 +42,26 @@ URL_ROUTER_ERROR url_router_insertl(UrlRouter *router,
 
 URL_ROUTER_ERROR url_router_match(UrlRouter *router,
                                   const char *key,
-                                  Args *arg,
+                                  Dict **args,
                                   void **data)
 {
     UrlRouterImp *r = (UrlRouter *)router;
-    return url_tree_match(&r->t, key, strlen(key), arg, data);
+    return url_tree_match(&r->t, key, strlen(key), args, data);
 }
 
 URL_ROUTER_ERROR url_router_matchl(UrlRouter *router,
                                    const char *key,
                                    int klen,
-                                   Args *arg,
+                                   Dict **args,
                                    void **data)
 {
     UrlRouterImp *r = (UrlRouter *)router;
-    return url_tree_match(&r->t, key, klen, arg, data);
+    return url_tree_match(&r->t, key, klen, args, data);
+}
+
+void url_router_dict_free(Dict *dict)
+{
+    if (dict != NULL) {
+        dict_free(dict, FREE);
+    }
 }

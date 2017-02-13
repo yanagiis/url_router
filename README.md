@@ -5,7 +5,7 @@ url router in pure c99
 
 ### src
 
-* No dependency
+1. [dict](https://github.com/yanagiis/dict)
 
 ### test
 

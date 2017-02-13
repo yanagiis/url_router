@@ -34,19 +34,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static void test_url_router_insert_match()
 {
-    char *abc;
+    char *abc = "hello";
     char *data;
-    Args *args;
+    Dict *args;
     URL_ROUTER_ERROR err;
 
     UrlRouter *r = url_router_new();
     err = url_router_insert(r, "/a/b/c", (void *)abc);
     TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
 
-    err = url_router_match(r, "/a/b/c", &args, (void **)&data);
+    err = url_router_match(r, "/a/b/c", NULL, (void **)&data);
     TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
     TEST_ASSERT_EQUAL_PTR(abc, data);
-    url_router_args_free(args);
 
     err = url_router_insert(r, "/a/:var/d", (void *)abc);
     TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
@@ -54,24 +53,22 @@ static void test_url_router_insert_match()
     err = url_router_insert(r, "/a/:foo/b/:bar", (void *)abc);
     TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
 
-    err = url_router_match(r, "/a/b/d", &args, (void **)&data);
+    err = url_router_match(r, "/a/b/d", NULL, (void **)&data);
     TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
     TEST_ASSERT_EQUAL_PTR(abc, data);
-    url_router_args_free(args);
 
     err = url_router_match(r, "/a/hello/b/world", &args, (void **)&data);
     TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
     TEST_ASSERT_EQUAL_PTR(abc, data);
 
-    url_router_args_get(args, "foo", &data);
+    data = dict_get(args, "foo");
     TEST_ASSERT_EQUAL_STRING("hello", data);
-    url_router_arg_free(data);
 
-    url_router_args_get(args, "bar", &data);
+    data = dict_get(args, "bar");
     TEST_ASSERT_EQUAL_STRING("world", data);
-    url_router_arg_free(data);
 
-    url_router_args_free(args);
+    url_router_dict_free(args);
+    url_router_free(r);
 }
 
 int main(int argc, char *argv[])
