@@ -82,7 +82,7 @@ void test_url_tree_insert_match_no_arg()
     for (int i = 0; i < sizeof(cases) / sizeof(cases[0]); ++i) {
         struct Case *c = &cases[i];
         URL_ROUTER_ERROR err;
-        Dict *args;
+        struct Dict *args;
         int *data;
         switch (c->op) {
             case OP_INSERT:
@@ -113,7 +113,7 @@ void test_url_tree_insert_match_no_arg()
 void test_url_tree_insert_match_with_args()
 {
     UrlTree tree;
-    Dict *args;
+    struct Dict *args;
     URL_ROUTER_ERROR err;
     char *var;
     bool is_existed;

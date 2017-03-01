@@ -42,7 +42,7 @@ URL_ROUTER_ERROR url_router_insertl(UrlRouter *router,
 
 URL_ROUTER_ERROR url_router_match(UrlRouter *router,
                                   const char *key,
-                                  Dict **args,
+                                  struct Dict **args,
                                   void **data)
 {
     UrlRouterImp *r = (UrlRouter *)router;
@@ -52,14 +52,14 @@ URL_ROUTER_ERROR url_router_match(UrlRouter *router,
 URL_ROUTER_ERROR url_router_matchl(UrlRouter *router,
                                    const char *key,
                                    int klen,
-                                   Dict **args,
+                                   struct Dict **args,
                                    void **data)
 {
     UrlRouterImp *r = (UrlRouter *)router;
     return url_tree_match(&r->t, key, klen, args, data);
 }
 
-void url_router_dict_free(Dict *dict)
+void url_router_dict_free(struct Dict *dict)
 {
     if (dict != NULL) {
         dict_free(dict, FREE);

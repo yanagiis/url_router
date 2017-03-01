@@ -54,9 +54,9 @@ UrlRouter *url_router_new();
 void url_router_free(UrlRouter *r);
 URL_ROUTER_ERROR url_router_insert(UrlRouter *r, const char *key, void *data);
 URL_ROUTER_ERROR url_router_insertl(UrlRouter *r, const char *key, int klen, void *data);
-URL_ROUTER_ERROR url_router_match(UrlRouter *r, const char *key, Dict **args, void **data);
-URL_ROUTER_ERROR url_router_matchl(UrlRouter *r, const char *key, int klen, Dict **args, void **data);
+URL_ROUTER_ERROR url_router_match(UrlRouter *r, const char *key, struct Dict **args, void **data);
+URL_ROUTER_ERROR url_router_matchl(UrlRouter *r, const char *key, int klen, struct Dict **args, void **data);
 
-void url_router_dict_free(Dict *dict);
+void url_router_dict_free(struct Dict *dict);
 
 #endif /* URL_ROUTER_H */

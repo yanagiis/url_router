@@ -201,7 +201,7 @@ static URL_ROUTER_ERROR url_node_add_edge(UrlNode *n,
     return URL_ROUTER_E_OK;
 }
 
-URL_ROUTER_ERROR
+static URL_ROUTER_ERROR
 _url_tree_insert(UrlNode *n, const UrlRouterString *url, void *data)
 {
     if (url->len == 0) {
@@ -255,7 +255,7 @@ url_tree_insert(UrlTree *t, const char *url, int len, void *data)
 
 static URL_ROUTER_ERROR _url_tree_match(UrlNode *n,
                                         const UrlRouterString *url,
-                                        Dict *dict,
+                                        struct Dict *dict,
                                         void **data)
 {
     URL_ROUTER_ERROR err;
@@ -306,14 +306,14 @@ URL_ROUTER_ERROR
 url_tree_match(UrlTree *t,
                const char *url,
                const int len,
-               Dict **dict,
+               struct Dict **dict,
                void **data)
 {
     if (url == NULL || len < 1 || url[0] != '/') {
         return URL_ROUTER_E_WRONG_PARAMETER;
     }
 
-    Dict *d = NULL;
+    struct Dict *d = NULL;
 
     if (dict != NULL) {
         d = dict_new();

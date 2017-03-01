@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     char *data;
 
     URL_ROUTER_ERROR err;
-    Dict *args;
+    struct Dict *args;
     UrlRouter *r = url_router_new();
 
     err = url_router_insert(r, "/a/b/c", str1);

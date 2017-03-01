@@ -36,7 +36,7 @@ static void test_url_router_insert_match()
 {
     char *abc = "hello";
     char *data;
-    Dict *args;
+    struct Dict *args;
     URL_ROUTER_ERROR err;
 
     UrlRouter *r = url_router_new();
