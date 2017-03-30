@@ -3,10 +3,8 @@ cmake_minimum_required(VERSION 2.8)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-find_path(DICT_INC NAMES dict/dict.h
-	PATH ${CMAKE_PREFIX_PATH}/include)
-find_library(DICT_LIB NAMES dict
-	PATH ${CMAKE_PREFIX_PATH}/lib)
+find_package(dict MODULE REQUIRED)
+find_package(unity MODULE REQUIRED)
 
 add_subdirectory(include)
 add_subdirectory(src)
