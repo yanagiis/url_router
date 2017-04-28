@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdlib.h>
 
-#define MALLOC malloc
-#define FREE free
+#define malloc malloc
+#define free free
 
 #endif /* URL_ROUTER_MEMORY_H */

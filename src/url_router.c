@@ -11,7 +11,7 @@ typedef struct UrlRouterImp {
 
 UrlRouter *url_router_new()
 {
-    UrlRouterImp *r = MALLOC(sizeof(UrlRouterImp));
+    UrlRouterImp *r = malloc(sizeof(UrlRouterImp));
     url_tree_init(&r->t);
     return (UrlRouter *)r;
 }
@@ -20,7 +20,7 @@ void url_router_free(UrlRouter *router)
 {
     UrlRouterImp *r = (UrlRouter *)router;
     url_tree_destroy(&r->t);
-    FREE(r);
+    free(r);
 }
 
 URL_ROUTER_ERROR url_router_insert(UrlRouter *router,
@@ -62,6 +62,6 @@ URL_ROUTER_ERROR url_router_matchl(UrlRouter *router,
 void url_router_dict_free(struct Dict *dict)
 {
     if (dict != NULL) {
-        dict_free(dict, FREE);
+        dict_free(dict, free);
     }
 }
