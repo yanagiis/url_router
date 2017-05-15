@@ -35,6 +35,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdbool.h>
 #include <dict/dict.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef void UrlRouter;
 
 typedef struct UrlRouterString {
@@ -58,5 +62,9 @@ URL_ROUTER_ERROR url_router_match(UrlRouter *r, const char *key, struct Dict **a
 URL_ROUTER_ERROR url_router_matchl(UrlRouter *r, const char *key, int klen, struct Dict **args, void **data);
 
 void url_router_dict_free(struct Dict *dict);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* URL_ROUTER_H */
