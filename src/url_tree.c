@@ -30,8 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <string.h>
-#include <dict/dict.h>
 
+#include "url_router/dict.h"
 #include "memory.h"
 #include "url_tree.h"
 

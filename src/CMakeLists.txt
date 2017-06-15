@@ -1,9 +1,8 @@
 set(SRC url_tree.c
-    url_router.c)
+    url_router.c
+    dict.c)
 
 add_library(url_router STATIC ${SRC})
-target_include_directories(url_router PUBLIC ${DICT_INCLUDE_DIRS})
-target_link_libraries(url_router ${DICT_LIBRARIES})
 
 set_target_properties(url_router PROPERTIES
     C_STANDARD 99

@@ -30,10 +30,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "memory.h"
+#include "url_router/dict.h"
 #include "url_router/url_router.h"
 #include "url_tree.h"
 
-#include <dict/dict.h>
 #include <string.h>
 
 typedef struct UrlRouterImp {
