@@ -1,6 +1,13 @@
 # url router
 url router in pure c99
 
+## How to build
+
+1. chmod +x setup.sh
+2. ./setup.sh
+3. mkdir build; cd build; cmake ..
+4. make
+
 ## Dependencies
 
 ### src
