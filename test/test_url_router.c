@@ -92,11 +92,85 @@ static void test_url_router_insert_match_mix()
     url_router_free(r);
 }
 
+
+static void test_url_router_remove_match()
+{
+    char *ab = "ab";
+    char *abc = "abc";
+    char *abcd = "abcd";
+    char *abce = "abce";
+    char *abcf = "abcf";
+    char *data;
+    URL_ROUTER_ERROR err;
+
+    UrlRouter *r = url_router_new();
+
+    err = url_router_insert(r, "/a/b/c", (void *)abc);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+
+    err = url_router_insert(r, "/a/b/c/d", (void *)abcd);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+
+    err = url_router_insert(r, "/a/b/c/e", (void *)abce);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+
+    err = url_router_insert(r, "/a/b/c/f", (void *)abcf);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+
+    err = url_router_insert(r, "/a/b", (void *)ab);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+
+    err = url_router_remove(r, "/a/b/c", (void **)&data);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+    TEST_ASSERT_EQUAL_PTR(abc, data);
+
+    err = url_router_remove(r, "/a/b/c", (void **)&data);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_NOT_FOUND, err);
+
+    err = url_router_match(r, "/a/b/c", NULL, (void **)&data);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_NOT_FOUND, err);
+
+    err = url_router_match(r, "/a/b", NULL, (void **)&data);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+    TEST_ASSERT_EQUAL_PTR(ab, data);
+
+    err = url_router_match(r, "/a/b/c/d", NULL, (void **)&data);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+    TEST_ASSERT_EQUAL_PTR(abcd, data);
+
+    err = url_router_match(r, "/a/b/c/e", NULL, (void **)&data);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+    TEST_ASSERT_EQUAL_PTR(abce, data);
+
+    err = url_router_match(r, "/a/b/c/f", NULL, (void **)&data);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+    TEST_ASSERT_EQUAL_PTR(abcf, data);
+
+    err = url_router_remove(r, "/a/b/c/e", (void **)&data);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+    TEST_ASSERT_EQUAL_PTR(abce, data);
+
+    err = url_router_remove(r, "/a/b/c/d", (void **)&data);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+    TEST_ASSERT_EQUAL_PTR(abcd, data);
+
+    err = url_router_remove(r, "/a/b/c/f", (void **)&data);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+    TEST_ASSERT_EQUAL_PTR(abcf, data);
+
+    err = url_router_remove(r, "/a/b", (void **)&data);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+    TEST_ASSERT_EQUAL_PTR(ab, data);
+
+    url_router_free(r);
+}
+
 int main(int argc, char *argv[])
 {
     UNITY_BEGIN();
     RUN_TEST(test_url_router_insert_match_no_arg);
     RUN_TEST(test_url_router_insert_match_mix);
+    RUN_TEST(test_url_router_remove_match);
     UNITY_END();
     return 0;
 }
