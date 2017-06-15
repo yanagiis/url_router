@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "url_tree.h"
-#include <unity/unity.h>
+#include <unity.h>
 
 #define OP_INSERT 1
 #define OP_INSERT_CONFLICT 2

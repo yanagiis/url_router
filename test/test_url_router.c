@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "url_router/url_router.h"
-#include <unity/unity.h>
+#include <unity.h>
 
 static void test_url_router_insert_match()
 {
