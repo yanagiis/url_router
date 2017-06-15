@@ -32,7 +32,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "url_router/url_router.h"
 #include <unity.h>
 
-static void test_url_router_insert_match()
+static void test_url_router_insert_match_no_arg()
+{
+    char *abc = "hello";
+    char *data;
+    URL_ROUTER_ERROR err;
+
+    UrlRouter *r = url_router_new();
+    err = url_router_insert(r, "/a/b/c", (void *)abc);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+
+    err = url_router_match(r, "/a/b/c", NULL, (void **)&data);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_OK, err);
+    TEST_ASSERT_EQUAL_PTR(abc, data);
+
+    err = url_router_match(r, "/a/b/d", NULL, (void **)&data);
+    TEST_ASSERT_EQUAL(URL_ROUTER_E_NOT_FOUND, err);
+    TEST_ASSERT_EQUAL_PTR(abc, data);
+
+    url_router_free(r);
+}
+
+static void test_url_router_insert_match_mix()
 {
     char *abc = "hello";
     char *data;
@@ -74,7 +95,8 @@ static void test_url_router_insert_match()
 int main(int argc, char *argv[])
 {
     UNITY_BEGIN();
-    RUN_TEST(test_url_router_insert_match);
+    RUN_TEST(test_url_router_insert_match_no_arg);
+    RUN_TEST(test_url_router_insert_match_mix);
     UNITY_END();
     return 0;
 }
