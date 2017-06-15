@@ -54,14 +54,6 @@ void url_router_free(UrlRouter *router)
     free(r);
 }
 
-URL_ROUTER_ERROR url_router_insert(UrlRouter *router,
-                                   const char *key,
-                                   void *data)
-{
-    UrlRouterImp *r = (UrlRouter *)router;
-    return url_tree_insert(&r->t, key, strlen(key), data);
-}
-
 URL_ROUTER_ERROR url_router_insertl(UrlRouter *router,
                                     const char *key,
                                     int klen,
@@ -69,15 +61,6 @@ URL_ROUTER_ERROR url_router_insertl(UrlRouter *router,
 {
     UrlRouterImp *r = (UrlRouter *)router;
     return url_tree_insert(&r->t, key, klen, data);
-}
-
-URL_ROUTER_ERROR url_router_match(UrlRouter *router,
-                                  const char *key,
-                                  struct Dict **args,
-                                  void **data)
-{
-    UrlRouterImp *r = (UrlRouter *)router;
-    return url_tree_match(&r->t, key, strlen(key), args, data);
 }
 
 URL_ROUTER_ERROR url_router_matchl(UrlRouter *router,
