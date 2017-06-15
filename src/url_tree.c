@@ -148,7 +148,7 @@ URL_ROUTER_ERROR url_tree_destroy(UrlTree *t)
     return _url_tree_destroy(&t->root);
 }
 
-static UrlEdge *url_create_edges(const UrlRouterString *url, void *data)
+static UrlEdge *url_create_edge(const UrlRouterString *url, void *data)
 {
     UrlRouterString subpath, remain_path;
     url_get_first_level(url, &subpath, &remain_path);
@@ -183,7 +183,7 @@ static URL_ROUTER_ERROR url_node_add_edge(UrlNode *n,
                                           const UrlRouterString *url,
                                           void *data)
 {
-    UrlEdge *new_edge = url_create_edges(url, data);
+    UrlEdge *new_edge = url_create_edge(url, data);
     if (new_edge == NULL) {
         return URL_ROUTER_E_NO_MEMORY;
     }
