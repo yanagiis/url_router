@@ -68,5 +68,7 @@ url_tree_match(UrlTree *t,
                const int len,
                struct Dict **arg,
                void **data);
+URL_ROUTER_ERROR
+url_tree_remove(UrlTree *t, const char *url, int len, void **data);
 
 #endif /* URL_ROUTER_URL_TREE_H */

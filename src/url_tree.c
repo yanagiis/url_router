@@ -202,8 +202,25 @@ static URL_ROUTER_ERROR url_node_add_edge(UrlNode *n,
     return URL_ROUTER_E_OK;
 }
 
-static URL_ROUTER_ERROR
-_url_tree_insert(UrlNode *n, const UrlRouterString *url, void *data)
+static void url_node_delete_edge(UrlNode *n,
+                                 UrlEdge *prev_e,
+                                 UrlEdge *e,
+                                 void **data)
+{
+    if (n->begin == e) {
+        n->begin = e->next;
+    } else if (n->end == e) {
+        n->end = prev_e;
+    } else {
+        prev_e->next = e->next;
+    }
+
+    url_edge_free(e);
+}
+
+static URL_ROUTER_ERROR _url_tree_insert(UrlNode *n,
+                                         const UrlRouterString *url,
+                                         void *data)
 {
     if (url->len == 0) {
         if (HAS_DATA(n)) {
@@ -332,4 +349,55 @@ url_tree_match(UrlTree *t,
         }
     }
     return err;
+}
+
+URL_ROUTER_ERROR
+_url_tree_remove(UrlNode *n, UrlRouterString *url, void **data)
+{
+    if (url->len == 0) {
+        if (HAS_DATA(n)) {
+            *data = n->data;
+            n->data = NULL;
+            return URL_ROUTER_E_OK;
+        }
+        return URL_ROUTER_E_NOT_FOUND;
+    }
+
+    UrlEdge *prev_e = NULL;
+    FOREACH_NODE_EDGE(n, e)
+    {
+        UrlRouterString subpath, remain_path;
+        if (!url_get_first_level(url, &subpath, &remain_path)) {
+            break;
+        }
+        if (subpath.len != e->len) {
+            prev_e = e;
+            continue;
+        }
+        if (strncmp(subpath.str, e->label, e->len) != 0) {
+            prev_e = e;
+            continue;
+        }
+
+        URL_ROUTER_ERROR err = _url_tree_remove(&e->node, &remain_path, data);
+        if (err == URL_ROUTER_E_OK) {
+            if (HAS_NO_DATA(n) && HAS_NO_CHILD(n)) {
+                url_node_delete_edge(n, prev_e, e, data);
+            }
+        }
+        return err;
+    }
+
+    return URL_ROUTER_E_NOT_FOUND;
+}
+
+URL_ROUTER_ERROR
+url_tree_remove(UrlTree *t, const char *url, int len, void **data)
+{
+    if (url == NULL || len < 1 || url[0] != '/') {
+        return URL_ROUTER_E_WRONG_PARAMETER;
+    }
+
+    UrlRouterString surl = {.str = url, .len = len};
+    return _url_tree_remove(&t->root, &surl, data);
 }

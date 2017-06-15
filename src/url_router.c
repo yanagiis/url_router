@@ -73,6 +73,15 @@ URL_ROUTER_ERROR url_router_matchl(UrlRouter *router,
     return url_tree_match(&r->t, key, klen, args, data);
 }
 
+URL_ROUTER_ERROR url_router_removel(UrlRouter *router,
+                                    const char *key,
+                                    int klen,
+                                    void **data)
+{
+    UrlRouterImp *r = (UrlRouter *)router;
+    return url_tree_remove(&r->t, key, klen, data);
+}
+
 void url_router_dict_free(struct Dict *dict)
 {
     if (dict != NULL) {
