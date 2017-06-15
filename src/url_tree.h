@@ -35,7 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "url_router.h"
+#include "url_router/url_router.h"
 
 struct UrlEdge;
 struct UrlNode;

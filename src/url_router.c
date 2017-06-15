@@ -29,9 +29,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "url_router.h"
-#include "url_tree.h"
 #include "memory.h"
+#include "url_router/url_router.h"
+#include "url_tree.h"
 
 #include <dict/dict.h>
 #include <string.h>

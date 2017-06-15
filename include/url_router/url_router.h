@@ -33,7 +33,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define URL_ROUTER_H
 
 #include <stdbool.h>
-#include <dict/dict.h>
+#include <string.h>
+#include <url_router/dict.h>
+
+#define url_router_insert(r, k, d) url_router_insertl(r, k, strlen(k), d)
+#define url_router_match(r, k, a, d) url_router_matchl(r, k, strlen(k), a, d)
+#define url_router_remove(r, k, d) url_router_removel(r, k, strlen(k), d)
 
 #ifdef __cplusplus
 extern "C" {
@@ -56,10 +61,12 @@ typedef enum URL_ROUTER_ERROR {
 
 UrlRouter *url_router_new();
 void url_router_free(UrlRouter *r);
-URL_ROUTER_ERROR url_router_insert(UrlRouter *r, const char *key, void *data);
 URL_ROUTER_ERROR url_router_insertl(UrlRouter *r, const char *key, int klen, void *data);
-URL_ROUTER_ERROR url_router_match(UrlRouter *r, const char *key, struct Dict **args, void **data);
 URL_ROUTER_ERROR url_router_matchl(UrlRouter *r, const char *key, int klen, struct Dict **args, void **data);
+URL_ROUTER_ERROR url_router_removel(UrlRouter *router,
+                                    const char *key,
+                                    int klen,
+                                    void **data);
 
 void url_router_dict_free(struct Dict *dict);
 
