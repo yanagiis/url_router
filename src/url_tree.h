@@ -44,7 +44,6 @@ typedef struct UrlNode {
     struct UrlEdge *begin;
     struct UrlEdge *end;
     void *data;
-    bool leaf;
 } UrlNode;
 
 typedef struct UrlEdge {

@@ -102,7 +102,6 @@ static void url_node_init(UrlNode *node)
 {
     node->data = NULL;
     node->begin = node->end = NULL;
-    node->leaf = false;
 }
 
 static UrlEdge *url_edge_new(UrlRouterString *url)
@@ -176,7 +175,6 @@ static UrlEdge *url_create_edges(const UrlRouterString *url, void *data)
         prev_edge = edge;
     }
 
-    prev_edge->node.leaf = true;
     prev_edge->node.data = data;
     return root_edge;
 }
@@ -212,7 +210,6 @@ _url_tree_insert(UrlNode *n, const UrlRouterString *url, void *data)
             return URL_ROUTER_E_URL_EXISTED;
         }
         n->data = data;
-        n->leaf = true;
         return URL_ROUTER_E_OK;
     }
 
