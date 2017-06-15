@@ -35,6 +35,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "memory.h"
 #include "url_tree.h"
 
+#define HAS_NO_DATA(n) (n->data == NULL)
+#define HAS_DATA(n) (n->data != NULL)
+#define HAS_NO_CHILD(n) (n->begin == NULL)
 #define FOREACH_NODE_EDGE(n, e) for (UrlEdge *e = n->begin; e; e = e->next)
 
 static const char *strnchr(const char *url, const int len, const char c)
@@ -186,7 +189,7 @@ static URL_ROUTER_ERROR url_node_add_edge(UrlNode *n,
     if (new_edge == NULL) {
         return URL_ROUTER_E_NO_MEMORY;
     }
-    if (n->begin == NULL) {
+    if (HAS_NO_CHILD(n)) {
         n->begin = n->end = new_edge;
     } else {
         if (url->str[0] == ':') {
@@ -205,7 +208,7 @@ static URL_ROUTER_ERROR
 _url_tree_insert(UrlNode *n, const UrlRouterString *url, void *data)
 {
     if (url->len == 0) {
-        if (n->leaf) {
+        if (HAS_DATA(n)) {
             return URL_ROUTER_E_URL_EXISTED;
         }
         n->data = data;
@@ -261,7 +264,7 @@ static URL_ROUTER_ERROR _url_tree_match(UrlNode *n,
     URL_ROUTER_ERROR err;
 
     if (url->len == 0) {
-        if (!n->leaf) {
+        if (HAS_NO_DATA(n)) {
             return URL_ROUTER_E_NOT_FOUND;
         }
         *data = n->data;
