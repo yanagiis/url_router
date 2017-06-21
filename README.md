@@ -10,10 +10,6 @@ url router in pure c99
 
 ## Dependencies
 
-### src
-
-1. [dict](https://github.com/yanagiis/dict)
-
 ### test
 
 1. [Unity](https://github.com/ThrowTheSwitch/Unity.git)
